@@ -3,25 +3,25 @@
 # http://github.com/kaouthia
 
 services:
-  comfyk:
+  comfyui:
     build:
       dockerfile: Dockerfile
-    image: comfyui:latest
+    image: dzirkler/comfyui:latest
     container_name: comfyui
     ports:
       - "8188:8188"
     volumes:
       # persist your models, output, and settings:
-      - c:/home/user/comfyui/models:/app/ComfyUI/models
+      - C:/Users/damon/Documents/ComfyUI/models:/app/ComfyUI/models
 
       # persist your output images:
-      - c:/home/user/comfyui/output:/app/ComfyUI/output
+      - C:/Users/damon/Documents/ComfyUI/output:/app/ComfyUI/output
       
       # persist all your settings & extra nodes:
-      - c:/home/user/comfyui/settings:/app/ComfyUI/user/default:rw
+      - C:/Users/damon/Documents/ComfyUI/settings:/app/ComfyUI/user/default:rw
 
       # persist just your saved flows (overrides the workflows/ in default):
-      - c:/home/user/comfyui/flows:/app/ComfyUI/user/default/workflows:rw
+      - C:/Users/damon/Documents/ComfyUI/user/default/workflows:/app/ComfyUI/user/default/workflows:rw
     
     runtime: nvidia
     environment:

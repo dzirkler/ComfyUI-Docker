@@ -11,22 +11,22 @@ ARG GID=1000
 
 # Install OS deps and create the non-root user
 RUN apt-get update \
- && apt-get install -y --no-install-recommends git \
- && groupadd --gid ${GID} appuser \
- && useradd --uid ${UID} --gid ${GID} --create-home --shell /bin/bash appuser \
- && rm -rf /var/lib/apt/lists/*
-
-# Install Mesa/GL and GLib so OpenCV can load libGL.so.1 for ComfyUI-VideoHelperSuite
-RUN apt-get update \
  && apt-get install -y --no-install-recommends \
+      git \
       libgl1 \
       libglx-mesa0 \
       libglib2.0-0 \
       fonts-dejavu-core \
       fontconfig \
+      build-essential \
+      cmake \
+ && groupadd --gid ${GID} appuser \
+ && useradd --uid ${UID} --gid ${GID} --create-home --shell /bin/bash appuser \
  && rm -rf /var/lib/apt/lists/*
 
-# Copy and enable the startup script
+RUN pip install insightface 
+
+ # Copy and enable the startup script
 COPY entrypoint.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh
 
@@ -42,14 +42,16 @@ WORKDIR /app
 # Clone the ComfyUI repository (replace URL with the official repo)
 RUN git clone https://github.com/comfyanonymous/ComfyUI.git
 
+# Ensure User Directory exists
+RUN mkdir -p /app/ComfyUI/user/default/workflows
+
 # Change directory to the ComfyUI folder
 WORKDIR /app/ComfyUI
 
 # Install ComfyUI dependencies
-RUN pip install --no-cache-dir -r requirements.txt
-
 # (Optional) Clean up pip cache to reduce image size
-RUN pip cache purge
+RUN pip install --no-cache-dir -r requirements.txt && \
+    pip cache purge
 
 # Expose the port that ComfyUI will use (change if needed)
 EXPOSE 8188

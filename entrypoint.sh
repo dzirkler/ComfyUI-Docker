@@ -8,7 +8,7 @@ set -e
 
 # --- Force ComfyUI-Manager config (uv off, no file logging, safe DB) ---
 # Make sure user dirs exist and are writable (handles Windows bind mounts)
-mkdir -p /app/ComfyUI/user /app/ComfyUI/user/default
+# mkdir -p /app/ComfyUI/user /app/ComfyUI/user/default # Moved to dockerfile
 chown -R "$(id -u)":"$(id -g)" /app/ComfyUI/user || true
 chmod -R u+rwX /app/ComfyUI/user || true
 
@@ -65,7 +65,10 @@ declare -A REPOS=(
   ["rgthree-comfy"]="https://github.com/rgthree/rgthree-comfy.git"
   ["ComfyUI-KJNodes"]="https://github.com/kijai/ComfyUI-KJNodes.git"
   ["ComfyUI_UltimateSDUpscale"]="https://github.com/ssitu/ComfyUI_UltimateSDUpscale.git"
-)
+  ["ComfyUI-Reactor"]="https://github.com/Gourieff/ComfyUI-ReActor.git"
+  ["ComfyUI-Impact-Pack"]="https://github.com/ltdrdata/ComfyUI-Impact-Pack.git"
+  
+  )
 
 if [ ! -f "$INIT_MARKER" ]; then
   echo "↳ First run: initializing custom_nodes…"
