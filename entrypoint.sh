@@ -67,7 +67,7 @@ declare -A REPOS=(
   ["ComfyUI_UltimateSDUpscale"]="https://github.com/ssitu/ComfyUI_UltimateSDUpscale.git"
   ["ComfyUI-Reactor"]="https://github.com/Gourieff/ComfyUI-ReActor.git"
   ["ComfyUI-Impact-Pack"]="https://github.com/ltdrdata/ComfyUI-Impact-Pack.git"
-  
+  ["comfyui-prompt-reader-node"]="https://github.com/receyuki/comfyui-prompt-reader-node.git"
   )
 
 if [ ! -f "$INIT_MARKER" ]; then

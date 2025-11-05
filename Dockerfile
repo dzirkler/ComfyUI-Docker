@@ -50,7 +50,18 @@ WORKDIR /app/ComfyUI
 
 # Install ComfyUI dependencies
 # (Optional) Clean up pip cache to reduce image size
-RUN pip install --no-cache-dir -r requirements.txt && \
+RUN pip install -U pip setuptools wheel && \
+    pip install --no-cache-dir -r requirements.txt && \
+    pip install triton && \
+    pip cache purge
+
+# Install Sage Attention from source
+#RUN pip install sage-attention 
+RUN git clone https://github.com/thu-ml/SageAttention.git && \
+    cd SageAttention  && \
+    export EXT_PARALLEL=4 NVCC_APPEND_FLAGS="--threads 8" MAX_JOBS=32 # Optional && \
+    python setup.py install && \
+    cd .. && \
     pip cache purge
 
 # Expose the port that ComfyUI will use (change if needed)
@@ -59,3 +70,4 @@ EXPOSE 8188
 # Run entrypoint first, then start ComfyUI
 ENTRYPOINT ["/entrypoint.sh"]
 CMD ["python","/app/ComfyUI/main.py","--listen","0.0.0.0"]
+#CMD ["python","/app/ComfyUI/main.py","--use-sage-attention","--listen","0.0.0.0"]
