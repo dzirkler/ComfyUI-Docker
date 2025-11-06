@@ -25,7 +25,7 @@ services:
       - C:/Users/damon/Documents/ComfyUI/user/default/workflows:/app/ComfyUI/user/default/workflows:rw
     
       # for testing, override entrypoint
-      - ./entrypoint.sh:/entrypoint.sh:ro
+      # - ./entrypoint.sh:/entrypoint.sh:ro
 
     runtime: nvidia
     environment:

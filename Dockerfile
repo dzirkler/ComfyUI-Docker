@@ -3,7 +3,7 @@
 # https://github.com/kaouthia
 
 # Use a minimal Python base image (adjust version as needed)
-FROM python:3.13-slim-bookworm AS base
+FROM python:3.13-slim-bookworm
 
 # Allow passing in your host UID/GID (defaults 1000:1000)
 ARG UID=1000
@@ -34,11 +34,6 @@ RUN apt-get update && \
     apt-get install -y cuda-toolkit-13-0 && \
     rm *.deb && \
     rm -rf /var/lib/apt/lists/*
-
-
-# Segmented to do faster builds
-FROM base AS comfyui
-# FROM dzirkler/comfyui:base AS comfyui
 
 # Create the non-root user
 RUN groupadd --gid ${GID} appuser && \
@@ -76,11 +71,6 @@ RUN pip install -U setuptools wheel && \
     pip install -U torch torchvision --index-url https://download.pytorch.org/whl/cu130 && \
     pip install --no-cache-dir -r requirements.txt && \
     pip cache purge
-
-
-# Segmented to do faster builds
-# FROM comfyui AS final
-FROM dzirkler/comfyui:comfyui AS final
 
 # Switch to non-root user
 USER $UID:$GID
