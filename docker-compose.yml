@@ -6,7 +6,7 @@ services:
   comfyui:
     build:
       dockerfile: Dockerfile
-      target: final
+      # target: final
     image: dzirkler/comfyui:latest
     container_name: comfyui
     ports:
