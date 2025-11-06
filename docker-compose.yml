@@ -6,16 +6,17 @@ services:
   comfyui:
     build:
       dockerfile: Dockerfile
+      target: final
     image: dzirkler/comfyui:latest
     container_name: comfyui
     ports:
       - "8188:8188"
     volumes:
       # persist your models, output, and settings:
-      - C:/Users/damon/Documents/ComfyUI/models:/app/ComfyUI/models
+      - C:/Users/damon/Documents/ComfyUI/models:/app/ComfyUI/models:rw
 
       # persist your output images:
-      - C:/Users/damon/Documents/ComfyUI/output:/app/ComfyUI/output
+      - C:/Users/damon/Documents/ComfyUI/output:/app/ComfyUI/output:rw
       
       # persist all your settings & extra nodes:
       - C:/Users/damon/Documents/ComfyUI/settings:/app/ComfyUI/user/default:rw
@@ -23,9 +24,13 @@ services:
       # persist just your saved flows (overrides the workflows/ in default):
       - C:/Users/damon/Documents/ComfyUI/user/default/workflows:/app/ComfyUI/user/default/workflows:rw
     
+      # for testing, override entrypoint
+      - ./entrypoint.sh:/entrypoint.sh:ro
+
     runtime: nvidia
     environment:
       - NVIDIA_VISIBLE_DEVICES=all
     stdin_open: true
     tty: true
-    restart: unless-stopped
+    # restart: unless-stopped
+    restart: no

@@ -54,24 +54,42 @@ else
 fi
 
 
+
+# --- Install SageAttention3 ---
+INIT_MARKER_SAGE="$CN_DIR/.firstrun_sageattention3_initialized"
+
+if [ ! -f "$INIT_MARKER_SAGE" ]; then
+  echo "↳ First run: Installing SageAttention3…"
+  cd /app
+  git clone --depth 1 https://github.com/thu-ml/SageAttention
+  cd /app/SageAttention/sageattention3_blackwell 
+  python -m pip install --user .
+  # python setup.py install --user
+  cd /app/ComfyUI
+
+  # Create marker file
+  touch "$INIT_MARKER_SAGE"
+else
+  echo "↳ SageAttention3 already initialized, skipping installation."
+fi
+
+
+
+
 # --- Prepare custom nodes ---
 CN_DIR=/app/ComfyUI/custom_nodes
-INIT_MARKER="$CN_DIR/.custom_nodes_initialized"
+INIT_MARKER="$CN_DIR/.firstrun_custom_nodes_initialized"
 
 declare -A REPOS=(
   ["ComfyUI-Manager"]="https://github.com/ltdrdata/ComfyUI-Manager.git"
-  ["ComfyUI_essentials"]="https://github.com/cubiq/ComfyUI_essentials.git"
   ["ComfyUI-Crystools"]="https://github.com/crystian/ComfyUI-Crystools.git"
-  ["rgthree-comfy"]="https://github.com/rgthree/rgthree-comfy.git"
-  ["ComfyUI-KJNodes"]="https://github.com/kijai/ComfyUI-KJNodes.git"
-  ["ComfyUI_UltimateSDUpscale"]="https://github.com/ssitu/ComfyUI_UltimateSDUpscale.git"
-  ["ComfyUI-Reactor"]="https://github.com/Gourieff/ComfyUI-ReActor.git"
-  ["ComfyUI-Impact-Pack"]="https://github.com/ltdrdata/ComfyUI-Impact-Pack.git"
-  ["comfyui-prompt-reader-node"]="https://github.com/receyuki/comfyui-prompt-reader-node.git"
+  ["ComfyUI-SageAttention3"]="https://github.com/wallen0322/ComfyUI-SageAttention3.git"
   )
 
 if [ ! -f "$INIT_MARKER" ]; then
-  echo "↳ First run: initializing custom_nodes…"
+  echo "↳ First run: Installing Custom Nodes…"
+
+  echo "↳ Cloning custom nodes…"
   mkdir -p "$CN_DIR"
   for name in "${!REPOS[@]}"; do
     url="${REPOS[$name]}"
@@ -88,15 +106,17 @@ if [ ! -f "$INIT_MARKER" ]; then
   for dir in "$CN_DIR"/*/; do
     req="$dir/requirements.txt"
     if [ -f "$req" ]; then
-      echo "  ↳ pip install --upgrade -r $req"
-      python -m pip install --no-cache-dir --upgrade -r "$req"
+      # echo "  ↳ pip install --upgrade -r $req"
+      # python -m pip install --no-cache-dir --upgrade -r "$req"
+      echo "  ↳ pip install -r $req"
+      python -m pip install -r "$req"
     fi
   done
 
   # Create marker file
   touch "$INIT_MARKER"
 else
-  echo "↳ Custom nodes already initialized, skipping clone and dependency installation."
+  echo "↳ Custom Nodes already initialized, skipping clone and dependency installation."
 fi
 
 echo "↳ Launching ComfyUI"
