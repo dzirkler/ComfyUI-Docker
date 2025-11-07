@@ -46,11 +46,12 @@ WORKDIR /app
 COPY entrypoint.sh /entrypoint.sh
 
 # Ensure /app has appropriate permissions for the non-root user
-RUN chmod +x /entrypoint.sh 
-# && \
-#     setfacl -R -m u:${UID}:rwx /app && \
-#     setfacl -R -m u:${UID}:rwx /usr/local/lib/python3.13/site-packages && \
-#     chown -R ${GID}:${UID} /app && chmod -R ug+rw /app
+RUN chmod +x /entrypoint.sh && \
+    chown -R ${GID}:${UID} /app && chmod -R ug+rw /app && \
+    setfacl -R -m u:${UID}:rwx /app
+
+# Switch to non-root user
+USER $UID:$GID
 
 # make ~/.local/bin available on the PATH so scripts like tqdm, torchrun, etc. are found
 ENV PATH=/home/appuser/.local/bin:$PATH
@@ -65,15 +66,16 @@ RUN mkdir -p /app/ComfyUI/user/default/workflows
 WORKDIR /app/ComfyUI
 
 # Install ComfyUI dependencies
-RUN pip install -U setuptools wheel && \
-    pip install insightface && \
-    pip install triton && \
-    pip install -U torch torchvision --index-url https://download.pytorch.org/whl/cu130 && \
+RUN pip install -U setuptools wheel pip && \
+    pip install insightface triton && \
+    pip install -U torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu130 && \
     pip install --no-cache-dir -r requirements.txt && \
     pip cache purge
-
-# Switch to non-root user
-USER $UID:$GID
+# RUN pip install --user -U setuptools wheel pip && \
+#     pip install --user insightface triton && \
+#     pip install --user -U torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu130 && \
+#     pip install --user --no-cache-dir -r requirements.txt && \
+#     pip cache purge
 
 # Expose the port that ComfyUI will use (change if needed)
 EXPOSE 8188

@@ -13,19 +13,19 @@ services:
       - "8188:8188"
     volumes:
       # persist your models, output, and settings:
-      - C:/Users/damon/Documents/ComfyUI/models:/app/ComfyUI/models:rw
+      - D:/ComfyUI/models:/app/ComfyUI/models:rw
 
       # persist your output images:
-      - C:/Users/damon/Documents/ComfyUI/output:/app/ComfyUI/output:rw
-      
+      - D:/ComfyUI/output:/app/ComfyUI/output:rw
+
       # persist all your settings & extra nodes:
-      - C:/Users/damon/Documents/ComfyUI/settings:/app/ComfyUI/user/default:rw
+      - D:/ComfyUI/settings:/app/ComfyUI/user/default:rw
 
       # persist just your saved flows (overrides the workflows/ in default):
-      - C:/Users/damon/Documents/ComfyUI/user/default/workflows:/app/ComfyUI/user/default/workflows:rw
+      - D:/ComfyUI/user/default/workflows:/app/ComfyUI/user/default/workflows:rw
     
       # for testing, override entrypoint
-      # - ./entrypoint.sh:/entrypoint.sh:ro
+      - ./entrypoint.sh:/entrypoint.sh:ro
 
     runtime: nvidia
     environment:

@@ -9,8 +9,8 @@ set -e
 # --- Force ComfyUI-Manager config (uv off, no file logging, safe DB) ---
 # Make sure user dirs exist and are writable (handles Windows bind mounts)
 # mkdir -p /app/ComfyUI/user /app/ComfyUI/user/default # Moved to dockerfile
-chown -R "$(id -u)":"$(id -g)" /app/ComfyUI/user || true
-chmod -R u+rwX /app/ComfyUI/user || true
+# chown -R "$(id -u)":"$(id -g)" /app/ComfyUI/user || true
+# chmod -R u+rwX /app/ComfyUI/user || true
 
 CFG_DIR="/app/ComfyUI/user/default/ComfyUI-Manager"
 CFG_FILE="$CFG_DIR/config.ini"
@@ -26,7 +26,7 @@ if [ ! -f "$CFG_FILE" ]; then
 [default]
 use_uv = False
 file_logging = False
-db_mode = cache
+# db_mode = cache
 database_url = ${SQLITE_URL}
 EOF
 else
@@ -42,10 +42,10 @@ else
     || printf '\nfile_logging = False\n' >> "$CFG_FILE"
   sed -i '/^log_path[[:space:]=]/d' "$CFG_FILE" || true
 
-  # db_mode = cache (prevents file DB usage)
-  grep -q '^db_mode' "$CFG_FILE" \
-    && sed -i 's/^db_mode.*/db_mode = cache/' "$CFG_FILE" \
-    || printf '\ndb_mode = cache\n' >> "$CFG_FILE"
+  # # db_mode = cache (prevents file DB usage)
+  # grep -q '^db_mode' "$CFG_FILE" \
+  #   && sed -i 's/^db_mode.*/db_mode = cache/' "$CFG_FILE" \
+  #   || printf '\ndb_mode = cache\n' >> "$CFG_FILE"
 
   # Provide a safe DB URL anyway (future-proof if Manager flips off cache)
   grep -q '^database_url' "$CFG_FILE" \
@@ -53,18 +53,20 @@ else
     || printf "database_url = ${SQLITE_URL}\n" >> "$CFG_FILE"
 fi
 
-
+COMFY_DIR=/app/ComfyUI
 
 # --- Install SageAttention3 ---
-INIT_MARKER_SAGE="$CN_DIR/.firstrun_sageattention3_initialized"
+INIT_MARKER_SAGE="$COMFY_DIR/.firstrun_sageattention3_initialized"
 
 if [ ! -f "$INIT_MARKER_SAGE" ]; then
   echo "↳ First run: Installing SageAttention3…"
   cd /app
   git clone --depth 1 https://github.com/thu-ml/SageAttention
   cd /app/SageAttention/sageattention3_blackwell 
-  python -m pip install --user .
-  # python setup.py install --user
+  # python setup.py install
+  python setup.py install --user
+  # python -m pip install .
+  # python -m pip install --user .
   cd /app/ComfyUI
 
   # Create marker file
@@ -77,8 +79,8 @@ fi
 
 
 # --- Prepare custom nodes ---
-CN_DIR=/app/ComfyUI/custom_nodes
-INIT_MARKER="$CN_DIR/.firstrun_custom_nodes_initialized"
+INIT_MARKER="$COMFY_DIR/.firstrun_custom_nodes_initialized"
+CN_DIR="$COMFY_DIR/custom_nodes"
 
 declare -A REPOS=(
   ["ComfyUI-Manager"]="https://github.com/ltdrdata/ComfyUI-Manager.git"
